@@ -17,7 +17,8 @@ rules the person can inspect, edit and forget.
 | Decision rules and reason labels | Implemented (`triage/decide.py`, `docs/decision_rules.md`) |
 | Guards protecting the system (input, injection, output, failure, learned rules) | Implemented (`triage/guards.py`) |
 | Regression tests (12) | Implemented (`tests/`) |
-| Web interface, learned-rules panel | Not started |
+| Concept design: version 1, sixteen expected errors, version 2 redesign with guards | Written (`docs/concept-design.md`, pseudocode in `docs/concept-design-algorithms.md`) |
+| Web interface, learned-rules panel, decline turn, undo | Planned (designed in the concept, not built) |
 
 Earlier work from Phase 1 is in `phase1/` (see below).
 
@@ -65,9 +66,9 @@ entry, approving some as drafted and changing others.
 |---|---|---|---|---|
 | Planning | Claude Code (Claude Opus 5.5) | A careful reading of the lab work on the email-triage assistant (`phase1/`), and an account of what it understood | An accurate summary of the problem, the artefacts and the open issues | Kept. I checked the summary against the Lab 3 specification before moving on |
 | Design | Claude Code (Claude Opus 5.5) | Possible designs for a prototype, compared | Three options (web prototype, Python simulation, screen walkthrough), with the web prototype recommended and Claude Haiku 5.5 suggested for extraction | Changed. I compared the options against the marking criteria and chose the recommended web prototype, but replaced the suggested Claude Haiku 5.5 with Claude Sonnet 5.5 at medium effort for extraction |
-| Repository | Claude Code (Claude Opus 5.5) | The relevant lab work copied into `phase1/`, a `.gitignore` with recommended exclusions, and a README with the sections below | The files, created as requested | Kept. I checked that `phase1/` holds no personal data and that the README matches the brief |
 | Extraction | Claude Code (Claude Opus 5.5) | The extraction call, with the success criteria written first, then a task specification, a schema with checks, ten test emails and replay files | The specification, the code and an evaluation script. No API key was available, so the replay files are simulated, and two of them contain deliberate errors to test the checks | Kept, and I labelled the simulated files as such. The evaluation run showed that the checks caught the reformatted date in E05 automatically, but the meeting time in E10 passed them and was still wrong |
 | Decision rules | Claude Code (Claude Opus 5.5) | Decision rules, reason labels, and guards to protect the system itself | Six ordered rules, labels listing what was used and what was not, five guards (input length, injected instructions, output checks, model failure and learned rules) and 12 regression tests | Changed. I allowed guards beyond the original plan. The E10 error is now fixed in the rules: a time counts as a deadline only when the email asks for action. I corrected the expected result for E05 to Needs you, so its "Not sure" counts as a safe fallback and not as a pass. I ran the tests and the evaluation myself |
+| Concept design | Claude Code (Claude Opus 5.5) | A concept design to be written before the web interface, with its expected errors and a redesign that avoids them using guards, as a design document and a separate file of pseudocode | Version 1 of the concept, sixteen expected errors placed on the conceptual spine with their type and cost, version 2 with an error-to-guard map, and fourteen algorithms, each marked implemented or planned | Changed the plan. I chose a concept design before the interface so that the expected errors shape what is built. I checked that each implemented algorithm matches the code |
 
 ## Additional files
 
