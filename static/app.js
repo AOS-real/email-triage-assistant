@@ -216,7 +216,7 @@ async function ruleAction(kind, data, feedback) {
   const result = await post(`/api/rules/${kind}`, data);
   if (result.error) { feedback.textContent = result.error; return; }
   state.rulesNote = kind === "forget"
-    ? (result.resorted.length ? `Forgotten. Re-sorted: ${result.resorted.join("; ")}.`
+    ? (result.resorted.length ? `Forgotten. Re-sorted: "${result.resorted.join('", "')}"`
                               : "Forgotten. No message changed section.")
     : kind === "edit" ? `Changed: ${result.rule.text}.` : "Renewed for another 90 days.";
   render();

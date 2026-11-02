@@ -1,0 +1,200 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="980" viewBox="0 0 1600 980" font-family="Segoe UI, Arial, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#111418"/>
+    </marker>
+    <marker id="arrow-grey" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#6b7480"/>
+    </marker>
+    <pattern id="hatch" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <rect width="10" height="10" fill="#fff6dd"/>
+      <line x1="0" y1="0" x2="0" y2="10" stroke="#f0d79a" stroke-width="4"/>
+    </pattern>
+    <style>
+      .impl { fill: #ffffff; stroke: #0b4f9c; stroke-width: 2.5; }
+      .sim  { fill: url(#hatch); stroke: #8a5a00; stroke-width: 2.5; stroke-dasharray: 10 5; }
+      .plan { fill: #f3f4f6; stroke: #6b7480; stroke-width: 2; stroke-dasharray: 3 5; }
+      .guard { fill: #eaf2fb; stroke: #0b4f9c; stroke-width: 2.5; }
+      .t  { font-size: 17px; font-weight: 700; fill: #111418; }
+      .s  { font-size: 14.5px; fill: #111418; }
+      .tag { font-size: 12.5px; font-weight: 700; letter-spacing: 0.5px; }
+      .ti { fill: #0b4f9c; } .ts { fill: #8a5a00; } .tp { fill: #4b5563; }
+      .flow { stroke: #111418; stroke-width: 2; fill: none; marker-end: url(#arrow); }
+      .flow2 { stroke: #111418; stroke-width: 2; fill: none; marker-end: url(#arrow); marker-start: url(#arrow); }
+      .pflow { stroke: #6b7480; stroke-width: 2; stroke-dasharray: 3 5; fill: none; marker-end: url(#arrow-grey); }
+      .lab { font-size: 13.5px; fill: #3d4651; font-style: italic; }
+      .band { font-size: 15px; font-weight: 700; fill: #3d4651; letter-spacing: 1px; }
+    </style>
+  </defs>
+
+  <rect width="1600" height="980" fill="#ffffff"/>
+  <text x="40" y="38" font-size="24" font-weight="700" fill="#111418">Email triage assistant: system architecture</text>
+  <text x="40" y="62" class="s">Arrows show information and control flow. Every box states its status.</text>
+
+  <!-- Band labels -->
+  <text x="40" y="96" class="band">EXTRACTION (THE ONLY MODEL CALL)</text>
+  <text x="40" y="296" class="band">CHECKS AND DECISION</text>
+  <text x="40" y="496" class="band">INTERACTION AND LEARNING</text>
+  <text x="40" y="726" class="band">PLANNED (NOT BUILT)</text>
+
+  <!-- Row 1: extraction -->
+  <rect x="40" y="110" width="260" height="110" rx="10" class="sim"/>
+  <text x="56" y="138" class="t">Test emails</text>
+  <text x="56" y="162" class="s">10 emails with expected labels</text>
+  <text x="56" y="182" class="s">data/test_emails.json</text>
+  <text x="56" y="207" class="tag ts">SIMULATED</text>
+
+  <rect x="340" y="110" width="260" height="110" rx="10" class="guard"/>
+  <text x="356" y="138" class="t">G1 Input guard</text>
+  <text x="356" y="162" class="s">Reads at most 4,000 characters;</text>
+  <text x="356" y="182" class="s">the label says if cut</text>
+  <text x="356" y="207" class="tag ti">IMPLEMENTED</text>
+
+  <rect x="640" y="110" width="260" height="110" rx="10" class="impl"/>
+  <text x="656" y="138" class="t">Context assembly</text>
+  <text x="656" y="162" class="s">Instruction: trusted, versioned</text>
+  <text x="656" y="182" class="s">Email: wrapped as untrusted data</text>
+  <text x="656" y="207" class="tag ti">IMPLEMENTED</text>
+
+  <rect x="940" y="110" width="260" height="110" rx="10" class="guard"/>
+  <text x="956" y="138" class="t">G2 Failure guard</text>
+  <text x="956" y="162" class="s">Failed or missing call:</text>
+  <text x="956" y="182" class="s">no guess, message is Not sure</text>
+  <text x="956" y="207" class="tag ti">IMPLEMENTED</text>
+
+  <rect x="1240" y="100" width="320" height="130" rx="10" class="sim"/>
+  <text x="1256" y="128" class="t">Model: extract facts</text>
+  <text x="1256" y="150" class="s">Claude Sonnet 5.5, medium effort,</text>
+  <text x="1256" y="169" class="s">JSON schema with quotes</text>
+  <text x="1256" y="190" class="tag ti">LIVE CALL: IMPLEMENTED, NOT RUN</text>
+  <text x="1256" y="212" class="tag ts">REPLAY OUTPUTS: SIMULATED</text>
+
+  <path d="M300 165 H336" class="flow"/>
+  <path d="M600 165 H636" class="flow"/>
+  <path d="M900 165 H936" class="flow"/>
+  <path d="M1200 165 H1236" class="flow"/>
+
+  <!-- Row 2: checks and decision -->
+  <rect x="1240" y="310" width="320" height="110" rx="10" class="guard"/>
+  <text x="1256" y="338" class="t">G3 Output checks</text>
+  <text x="1256" y="362" class="s">Schema; every quote and date</text>
+  <text x="1256" y="382" class="s">word for word in the email</text>
+  <text x="1256" y="407" class="tag ti">IMPLEMENTED</text>
+
+  <rect x="940" y="310" width="260" height="110" rx="10" class="guard"/>
+  <text x="956" y="338" class="t">G4 Injection guard</text>
+  <text x="956" y="362" class="s">Patterns found in code; warns,</text>
+  <text x="956" y="382" class="s">never changes the section</text>
+  <text x="956" y="407" class="tag ti">IMPLEMENTED</text>
+
+  <rect x="600" y="300" width="300" height="130" rx="10" class="impl"/>
+  <text x="616" y="328" class="t">Decision rules and label</text>
+  <text x="616" y="350" class="s">Not sure | your rule | deadline |</text>
+  <text x="616" y="369" class="s">request | Can wait</text>
+  <text x="616" y="389" class="s">Label: used, not used, warnings</text>
+  <text x="616" y="414" class="tag ti">IMPLEMENTED (CODE, NOT THE MODEL)</text>
+
+  <rect x="40" y="310" width="300" height="110" rx="10" class="impl"/>
+  <text x="56" y="338" class="t">Evaluation harness</text>
+  <text x="56" y="362" class="s">Criteria C1 to C6; 28 regression</text>
+  <text x="56" y="382" class="s">tests (evaluate.py, tests/)</text>
+  <text x="56" y="407" class="tag ti">IMPLEMENTED</text>
+
+  <path d="M1400 230 V306" class="flow"/>
+  <text x="1408" y="272" class="lab">JSON output</text>
+  <path d="M1240 365 H1204" class="flow"/>
+  <path d="M940 365 H904" class="flow"/>
+  <path d="M340 365 H596" class="pflow" stroke-dasharray="6 5"/>
+  <text x="370" y="355" class="lab">runs the test set through</text>
+
+  <!-- Row 3: interaction and learning -->
+  <rect x="40" y="520" width="200" height="130" rx="10" class="impl" fill="#ffffff"/>
+  <text x="56" y="550" class="t">Person</text>
+  <text x="56" y="574" class="s">Reads labels, answers</text>
+  <text x="56" y="593" class="s">"Can this wait?", moves,</text>
+  <text x="56" y="612" class="s">confirms or forgets rules</text>
+
+  <rect x="290" y="510" width="300" height="150" rx="10" class="impl"/>
+  <text x="306" y="538" class="t">Web page (static/)</text>
+  <text x="306" y="560" class="s">Needs you, Not sure, Can wait;</text>
+  <text x="306" y="579" class="s">reason panel; rule preview;</text>
+  <text x="306" y="598" class="s">What I've learned; Ask box</text>
+  <text x="306" y="619" class="s">Text shown as text only</text>
+  <text x="306" y="644" class="tag ti">IMPLEMENTED</text>
+
+  <rect x="640" y="520" width="240" height="130" rx="10" class="impl"/>
+  <text x="656" y="548" class="t">Web server (app.py)</text>
+  <text x="656" y="572" class="s">This computer only;</text>
+  <text x="656" y="591" class="s">strict content policy</text>
+  <text x="656" y="634" class="tag ti">IMPLEMENTED</text>
+
+  <rect x="930" y="510" width="290" height="150" rx="10" class="impl"/>
+  <text x="946" y="538" class="t">Inbox state (inbox.py)</text>
+  <text x="946" y="560" class="s">Moves and undo; rule proposal</text>
+  <text x="946" y="579" class="s">held on the server; decline of</text>
+  <text x="946" y="598" class="s">out-of-scope requests;</text>
+  <text x="946" y="617" class="s">Can wait summary</text>
+  <text x="946" y="644" class="tag ti">IMPLEMENTED</text>
+
+  <rect x="1270" y="510" width="290" height="150" rx="10" class="guard"/>
+  <text x="1286" y="538" class="t">G5 Rule guard and</text>
+  <text x="1286" y="558" class="t">learned rules</text>
+  <text x="1286" y="580" class="s">From the person only; one sender;</text>
+  <text x="1286" y="599" class="s">dated; expire after 90 days;</text>
+  <text x="1286" y="618" class="s">no duplicates; at most 20</text>
+  <text x="1286" y="644" class="tag ti">IMPLEMENTED</text>
+
+  <path d="M240 585 H286" class="flow2"/>
+  <text x="243" y="572" class="lab">acts</text>
+  <path d="M590 585 H636" class="flow2"/>
+  <text x="594" y="572" class="lab">JSON</text>
+  <path d="M880 585 H926" class="flow2"/>
+  <path d="M1220 585 H1266" class="flow"/>
+  <text x="1226" y="572" class="lab">saved</text>
+
+  <!-- decision feeds inbox; rules feed decision -->
+  <path d="M800 430 V470 H1020 V506" class="flow"/>
+  <text x="830" y="463" class="lab">section and label for each email</text>
+  <path d="M1415 510 V470 H1120 V445 H860 V434" class="flow"/>
+  <text x="1150" y="463" class="lab">active rules</text>
+
+  <!-- Row 4: planned -->
+  <rect x="40" y="745" width="280" height="104" rx="10" class="plan"/>
+  <text x="56" y="773" class="t">Live mail connector</text>
+  <text x="56" y="796" class="s">Replaces the test emails;</text>
+  <text x="56" y="815" class="s">read-only, least privilege</text>
+  <text x="56" y="838" class="tag tp">PLANNED</text>
+
+  <rect x="350" y="745" width="280" height="104" rx="10" class="plan"/>
+  <text x="366" y="773" class="t">Decision log (A1)</text>
+  <text x="366" y="796" class="s">Dated record of each decision</text>
+  <text x="366" y="838" class="tag tp">PLANNED</text>
+
+  <rect x="660" y="745" width="280" height="104" rx="10" class="plan"/>
+  <text x="676" y="773" class="t">Per-message progress (A13)</text>
+  <text x="676" y="796" class="s">"Sorting..."; Not sure after 10 s</text>
+  <text x="676" y="838" class="tag tp">PLANNED</text>
+
+  <rect x="970" y="745" width="280" height="104" rx="10" class="plan"/>
+  <text x="986" y="773" class="t">Daily Can wait reminder (A14)</text>
+  <text x="986" y="796" class="s">At most once a day</text>
+  <text x="986" y="838" class="tag tp">PLANNED</text>
+
+  <rect x="1280" y="745" width="280" height="104" rx="10" class="plan"/>
+  <text x="1296" y="773" class="t">Calibrated criterion</text>
+  <text x="1296" y="796" class="s">From the Not sure rate in real use</text>
+  <text x="1296" y="838" class="tag tp">PLANNED</text>
+
+
+  <!-- Legend -->
+  <rect x="40" y="880" width="1520" height="70" rx="10" fill="#ffffff" stroke="#c5ccd4"/>
+  <rect x="60" y="900" width="44" height="28" rx="6" class="impl"/>
+  <text x="114" y="920" class="s">Implemented: runs as code</text>
+  <rect x="340" y="900" width="44" height="28" rx="6" class="guard"/>
+  <text x="394" y="920" class="s">Guard (G1 to G5): implemented check</text>
+  <rect x="690" y="900" width="44" height="28" rx="6" class="sim"/>
+  <text x="744" y="920" class="s">Simulated: stand-in data or output</text>
+  <rect x="1030" y="900" width="44" height="28" rx="6" class="plan"/>
+  <text x="1084" y="920" class="s">Planned: designed, not built</text>
+  <text x="1330" y="920" class="s">Dashed arrow: planned or test flow</text>
+</svg>
