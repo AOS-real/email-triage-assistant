@@ -20,7 +20,7 @@ INJECTION_PATTERNS = [
     r"\b(mark|move|archive|delete|forward) (this|all|every)\b.*\b(mail|message|email)s?\b",
 ]
 
-RULE_CONDITIONS = {"deadline", "asks_for_action", "sender_known", "sender_type"}
+RULE_CONDITIONS = {"sender", "deadline", "asks_for_action", "sender_known", "sender_type"}
 SECTIONS = {"needs_you", "can_wait"}
 
 

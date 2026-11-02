@@ -20,6 +20,7 @@ def facts_from(email, extraction):
         # E10: a time in an email that asks nothing of the reader is not a deadline.
         "deadline": out["deadline_text"] if acts else None,
         "asks_for_action": acts,
+        "sender": email["from"],
         "sender_known": email["sender_known"],
         "sender_type": out["sender_type"],
         "evidence": out["evidence"],
@@ -31,6 +32,8 @@ def describe_rule(rule):
     """Plain-language text of a learned rule, as shown to the person."""
     parts = []
     cond = rule["condition"]
+    if "sender" in cond:
+        parts.append(f"is from {cond['sender']}")
     if cond.get("deadline"):
         parts.append("has a deadline")
     if "asks_for_action" in cond:
@@ -61,7 +64,7 @@ def decide(email, extraction, rules=()):
 
     facts = facts_from(email, extraction)
     if facts is None:
-        return dict(label, section="not_sure", headline="Not sure",
+        return dict(label, section="not_sure", headline="The details could not be checked",
                     used=[f"The email could not be checked: {extraction['problems'][0]}"], ask=ASK)
 
     used = [f'The email says: "{quote}"' for quote in facts["evidence"]]
@@ -71,7 +74,7 @@ def decide(email, extraction, rules=()):
             "so it was not treated as a deadline.")
 
     if unreadable and not facts["deadline"]:
-        return dict(label, section="not_sure", headline="Not sure",
+        return dict(label, section="not_sure", headline=f"Could not read {', '.join(unreadable)}",
                     used=used + [f"Could not read {', '.join(unreadable)}, which may say more"],
                     ask=ASK)
 

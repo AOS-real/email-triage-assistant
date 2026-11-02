@@ -135,14 +135,14 @@ person's correction
 | ER6 | Any failed call becomes Not sure with the reason; no guessing | Honest failure (Phase 1 review) | A3 | IMPLEMENTED |
 | ER7 | Body capped at 4,000 characters; the label says so | Context window as a budget (L10) | A2 | IMPLEMENTED |
 | ER8 | Unreadable attachment without a deadline leads to Not sure, naming the file | G2 (L03) | A6 | IMPLEMENTED |
-| ER9 | Rule proposed from the narrowest matching facts; preview of affected messages; confirmation | G14 adapt cautiously (L03) | A9 | PLANNED (rule guard IMPLEMENTED) |
-| ER10 | Rules dated, expiring after 90 days unless renewed; stale rules flagged | Stale memory (L10) | A10 | PLANNED |
-| ER11 | Undo on every move; the rule is confirmed separately | Slips need undo (L06) | A12 | PLANNED |
-| ER12 | Duplicate rules rejected | Idempotency (L12) | A9 | PLANNED |
+| ER9 | Rules learned only about one sender address; preview of affected messages; confirmation | G14 adapt cautiously (L03) | A9 | IMPLEMENTED |
+| ER10 | Rules dated, expiring after 90 days unless renewed; expired rules flagged and not applied | Stale memory (L10) | A10 | IMPLEMENTED |
+| ER11 | Undo on every move; the rule is confirmed separately | Slips need undo (L06) | A12 | IMPLEMENTED |
+| ER12 | Duplicate rules rejected | Idempotency (L12) | A9 | IMPLEMENTED |
 | ER13 | Rules accepted only from the person, in a fixed shape | Least privilege (L12) | A9 | IMPLEMENTED |
-| ER14 | Can wait count and reminder; new senders highlighted | Automation bias (L06) | A14 | PLANNED |
-| ER15 | Decline turn that states the limit and returns control | Repair turns: decline (L07) | A11 | PLANNED |
-| ER16 | Acknowledge within 0.1 s, "Sorting..." within 1 s | Feedback timing (L04) | A13 | PLANNED |
+| ER14 | Can wait count with new senders; daily reminder | Automation bias (L06) | A14 | Count IMPLEMENTED; reminder PLANNED |
+| ER15 | Decline turn that states the limit and returns control | Repair turns: decline (L07) | A11 | IMPLEMENTED |
+| ER16 | Acknowledge within 0.1 s, "Sorting..." within 1 s | Feedback timing (L04) | A13 | Acknowledgement IMPLEMENTED; per-message progress PLANNED |
 
 ## 5. Residual risks
 

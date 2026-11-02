@@ -1,0 +1,153 @@
+:root {
+  --ink: #111418;
+  --muted: #3d4651;
+  --line: #c5ccd4;
+  --paper: #ffffff;
+  --ground: #eef1f4;
+  --accent: #0b4f9c;
+  --accent-ink: #ffffff;
+  --unsure: #fff1cc;
+  --unsure-line: #8a5a00;
+  --warn: #fde7e7;
+  --warn-line: #a31919;
+  --ok: #e3f3e6;
+  --ok-line: #1d6b2c;
+  --selected: #dbe8f8;
+}
+
+* { box-sizing: border-box; }
+
+html, body { height: 100%; margin: 0; }
+
+body {
+  background: var(--ground);
+  color: var(--ink);
+  font: 16px/1.45 system-ui, "Segoe UI", Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+
+button, input { font: inherit; }
+
+:focus:not(:focus-visible) { outline: none; }
+
+.top {
+  display: flex;
+  align-items: baseline;
+  gap: 24px;
+  padding: 12px 24px;
+  background: var(--paper);
+  border-bottom: 1px solid var(--line);
+}
+
+.top h1 { margin: 0; font-size: 24px; }
+.summary { margin: 0; font-weight: 600; }
+.source { margin: 0 0 0 auto; color: var(--muted); }
+
+.layout {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(300px, 1fr) minmax(300px, 1fr) minmax(420px, 1.5fr);
+  gap: 16px;
+  padding: 16px 24px;
+}
+
+.column { min-height: 0; display: flex; flex-direction: column; }
+.column h2 { margin: 0 0 8px; font-size: 20px; }
+.count { color: var(--muted); font-weight: 400; }
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.message {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 12px;
+  cursor: pointer;
+}
+
+.message.selected { background: var(--selected); border-color: var(--accent); }
+.message.unsure { background: var(--unsure); border-color: var(--unsure-line); }
+.message.unsure.selected { border-width: 2px; }
+
+.message .subject { font-weight: 700; }
+.message .from { color: var(--muted); font-size: 15px; }
+.message .headline { margin-top: 4px; }
+.chip {
+  display: inline-block;
+  padding: 0 8px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 700;
+  margin-right: 6px;
+}
+.chip.unsure { background: var(--unsure-line); color: #fff; }
+.chip.warn { background: var(--warn-line); color: #fff; }
+.chip.you { background: var(--accent); color: var(--accent-ink); }
+
+.choice { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+
+button {
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: var(--accent-ink);
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+button.quiet { background: var(--paper); color: var(--accent); }
+button:disabled { opacity: 0.5; cursor: default; }
+
+.side { gap: 16px; overflow-y: auto; }
+
+.panel {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 14px 16px;
+}
+.panel h2, .panel h3 { margin: 0 0 8px; }
+.panel h3 { font-size: 17px; }
+.empty { color: var(--muted); margin: 0; }
+
+.detail .body {
+  white-space: pre-wrap;
+  border-left: 3px solid var(--line);
+  padding-left: 12px;
+  margin: 8px 0 12px;
+}
+
+.label-box { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; margin: 8px 0; }
+.label-box.unsure { background: var(--unsure); border-color: var(--unsure-line); }
+.label-box ul { margin: 4px 0 8px; padding-left: 20px; }
+.label-box .part { font-weight: 700; margin: 6px 0 0; }
+
+.warnings { background: var(--warn); border: 1px solid var(--warn-line); border-radius: 8px;
+            padding: 8px 12px; margin: 8px 0; }
+
+.outcome { background: var(--ok); border: 1px solid var(--ok-line); border-radius: 8px;
+           padding: 10px 12px; margin: 8px 0; }
+.outcome p { margin: 0 0 6px; }
+.error { color: var(--warn-line); font-weight: 600; margin: 6px 0 0; }
+
+.rules { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.rule { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; }
+.rule.expired { background: var(--unsure); border-color: var(--unsure-line); }
+.rule .text { font-weight: 700; }
+.rule .meta { color: var(--muted); font-size: 15px; }
+
+.ask { display: flex; gap: 8px; align-items: center; }
+.ask input { flex: 1; padding: 6px 10px; border: 1px solid var(--muted); border-radius: 6px; }
+.reply { margin: 10px 0 0; padding: 10px 12px; border-radius: 8px; background: var(--ground); }
+.reply.decline { background: var(--warn); border: 1px solid var(--warn-line); }
+
+.status { color: var(--muted); font-size: 15px; margin: 8px 0 0; }

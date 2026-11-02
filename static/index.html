@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Email triage assistant</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header class="top">
+    <h1>Inbox</h1>
+    <p id="summary" class="summary">Sorting...</p>
+    <p class="source">Model outputs in this prototype are simulated</p>
+    <button id="reset" class="quiet">Reset demo</button>
+  </header>
+
+  <main class="layout">
+    <section class="column" aria-labelledby="needs-title">
+      <h2 id="needs-title">Needs you <span id="needs-count" class="count"></span></h2>
+      <ul id="needs" class="list"></ul>
+    </section>
+
+    <section class="column" aria-labelledby="wait-title">
+      <h2 id="wait-title">Can wait <span id="wait-count" class="count"></span></h2>
+      <ul id="wait" class="list"></ul>
+    </section>
+
+    <section class="column side">
+      <article id="detail" class="panel detail">
+        <p class="empty">Select a message to see why it was placed there.</p>
+      </article>
+
+      <article class="panel">
+        <h2>What I've learned</h2>
+        <ul id="rules" class="rules"></ul>
+      </article>
+
+      <article class="panel">
+        <h2>Ask the assistant</h2>
+        <form id="ask" class="ask">
+          <label for="ask-text">Request</label>
+          <input id="ask-text" maxlength="500" autocomplete="off"
+                 placeholder="For example: delete everything from the landlord">
+          <button type="submit">Ask</button>
+        </form>
+        <p id="ask-reply" class="reply" hidden></p>
+      </article>
+    </section>
+  </main>
+
+  <script src="/app.js"></script>
+</body>
+</html>

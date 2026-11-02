@@ -132,30 +132,36 @@ procedure COMPOSE_LABEL(decision, note):
 
 ## A8. Answer "Can this wait?"
 
-Prevents ER1, ER6, ER8 reaching the person unseen. PLANNED (interface).
+Prevents ER1, ER6, ER8 reaching the person unseen. IMPLEMENTED (`triage/inbox.py`, `static/`).
+Changed during the build: answering "Can this wait?" places the message for this time only and
+offers no rule, because a Not sure message has no checked facts to learn from.
 
 ```
 procedure ANSWER_NOT_SURE(email, answer):
-    if answer = "Keep in Needs you": place(email, NEEDS_YOU)
-    if answer = "Move to Can wait":  place(email, CAN_WAIT)
-    show "Moved. Undo" for 10 seconds                            # A12
-    offer, without pressing, "Sort mail like this the same way next time?" -> A9
+    if answer = "Keep in Needs you": MOVE(email, NEEDS_YOU, "Just this once")
+    if answer = "Move to Can wait":  MOVE(email, CAN_WAIT, "Just this once")
+    show "Undo last move"                                        # A12
 ```
 
 ## A9. Turn a correction into a rule [G5]
 
-Prevents ER9, ER11, ER12, ER13. Rule guard IMPLEMENTED (`guards.validate_rule`); preview and
-confirmation PLANNED.
+Prevents ER9, ER11, ER12, ER13. IMPLEMENTED (`triage/inbox.py`, `guards.validate_rule`).
+Changed during the build: version 2 proposed rules on deadline and sender type. Building it showed
+that a deadline rule repeats what the default rule already does, and that a sender-type rule
+("all organisations") is the over-broad rule of ER9. Rules are therefore learned only about one
+sender address; a missed deadline is recorded but teaches nothing; free text is not offered.
+The proposed rule is held on the server, so the page can confirm it but cannot alter it.
 
 ```
-procedure LEARN_FROM_CORRECTION(email, decision, new_section, reason):
+procedure LEARN_FROM_CORRECTION(email, new_section, reason):
     facts <- facts of email used by DECIDE
-    condition <- narrowest conditions that explain the reason:
-        "Urgent deadline"   -> {deadline: true, asks_for_action: true}
-        "Important sender"  -> {sender_known: facts.sender_known, sender_type: facts.sender_type}
-        "Other"             -> no rule; keep only this move                  # free text never becomes a rule
+    if reason = "Just this once":                 return "Nothing was learned"
+    if reason = "It has a deadline the assistant missed":
+                                                  return "Recorded as a missed deadline; no safe rule"
+    if facts is unknown (the email failed its checks): return "Nothing is learned from it"
+    condition <- {sender: email.from}             # "This sender matters" / "can always wait"
     rule <- {id, condition, section: new_section, created: today,
-             expires: today + RULE_EXPIRY, source: "person", evidence: email.id + reason}
+             expires: today + RULE_EXPIRY, source: "person", evidence: subject + reason}
     problems <- VALIDATE_RULE(rule, rules)                                   # [G5]
     if a rule with the same condition and section exists: problems += "already learned"   # ER12
     if problems not empty: show problems beside the button; stop
@@ -166,7 +172,7 @@ procedure LEARN_FROM_CORRECTION(email, decision, new_section, reason):
 
 procedure VALIDATE_RULE(rule, rules):
     reject if rule.source is not "person"                  # ER13: never from email or model text
-    reject if rule.condition uses a signal outside {deadline, asks_for_action, sender_known, sender_type}
+    reject if rule.condition uses a signal outside {sender, deadline, asks_for_action, sender_known, sender_type}
     reject if rule.section is not NEEDS_YOU or CAN_WAIT
     reject if count(rules) >= MAX_RULES
     reject if rule.created is not a valid date
@@ -174,26 +180,28 @@ procedure VALIDATE_RULE(rule, rules):
 
 ## A10. What I've learned: inspect, edit, forget
 
-Prevents ER10, ER13. PLANNED.
+Prevents ER10, ER13. IMPLEMENTED (`triage/inbox.py`, `static/`). Editing is limited to sending
+the sender's mail to the other section.
 
 ```
 procedure SHOW_LEARNED(rules):
     for each rule, most recent first:
-        show plain-language text, evidence ("from your correction of <email> on <date>"),
-             expiry date, and buttons Edit and Forget
-        if today > rule.expires: mark "Expired: renew or forget" and stop applying it   # ER10
+        show plain-language text, evidence ("Because: your move of <subject> (<reason>)"),
+             learned and expiry dates, and buttons "Send to <other section> instead" and Forget
+        if today > rule.expires: mark expired, offer Renew, and stop applying it   # ER10
 
-procedure EDIT(rule, new_section or narrower condition):
-    validate with VALIDATE_RULE; replace the rule; keep the original date as evidence
+procedure EDIT(rule, new_section):
+    validate with VALIDATE_RULE and the duplicate check; change the section
 
 procedure FORGET(rule):
-    delete the rule and every derived copy (cached decisions that cite it)
-    re-run DECIDE on messages that the rule placed; show "Forgotten. 2 messages re-sorted."
+    delete the rule; decisions are rebuilt on every request, so no derived copy survives
+    re-run DECIDE on every message; show "Forgotten. Re-sorted: <subjects>."
 ```
 
 ## A11. Decline an out-of-scope request
 
-Prevents ER15. PLANNED.
+Prevents ER15. IMPLEMENTED (`inbox.handle_request`), by matching whole action words in code;
+no model is involved, so a request can never cause an action.
 
 ```
 procedure HANDLE_REQUEST(text):
@@ -207,19 +215,23 @@ procedure HANDLE_REQUEST(text):
 
 ## A12. Undo a move
 
-Prevents ER11. PLANNED.
+Prevents ER11. IMPLEMENTED (`inbox.move`, `inbox.undo_move`). Changed during the build: the undo
+button stays until the next move of that message instead of disappearing after 10 seconds, so a
+slow reader is not rushed.
 
 ```
-procedure MOVE(email, section):
-    previous <- email.section
+procedure MOVE(email, section, reason):
+    remember the previous placement of email
     place(email, section)
-    show "Moved to <section>. Undo" until the next action or 10 seconds
-    if Undo pressed: place(email, previous); cancel any rule offer from this move
+    show "Undo last move" beside the message
+    if Undo pressed: restore the previous placement; cancel any rule offer from this move
 ```
 
 ## A13. Feedback timing
 
-Prevents ER16. PLANNED.
+Prevents ER16. PARTLY IMPLEMENTED: the page shows "Sorting..." at once and every action
+redraws the inbox; per-message progress and the 10-second fallback are PLANNED, because replay
+mode answers instantly and the delays cannot yet be observed.
 
 ```
 procedure SHOW_ACKNOWLEDGEMENT(email):
@@ -231,7 +243,8 @@ procedure SHOW_ACKNOWLEDGEMENT(email):
 
 ## A14. Keep Can wait from being treated as checked
 
-Prevents ER14. PLANNED.
+Prevents ER14. PARTLY IMPLEMENTED: the summary line is shown at the top of the inbox; the daily
+reminder is PLANNED.
 
 ```
 procedure CAN_WAIT_SUMMARY(messages):
