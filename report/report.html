@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>An Email-Triage Assistant</title>
+<style>
+  :root {
+    --paper: #fbf8f3;
+    --page: #fffdf9;
+    --ink: #23201c;
+    --muted: #5a524a;
+    --rule: #ddd5ca;
+    --soft: #f3eee6;
+    --accent: #3b342d;
+  }
+  * { box-sizing: border-box; }
+  html { background: linear-gradient(180deg, #f6f1ea 0%, var(--paper) 40%, #f2ece3 100%); }
+  body {
+    margin: 0;
+    color: var(--ink);
+    font: 18px/1.65 Georgia, "Iowan Old Style", "Times New Roman", serif;
+  }
+  main {
+    max-width: 62rem;
+    margin: 2.5rem auto;
+    padding: 3rem 3.5rem;
+    background: var(--page);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    box-shadow: 0 2px 18px rgba(60, 45, 30, 0.06);
+  }
+  h1, h2, h3 { font-family: "Segoe UI", Arial, sans-serif; color: var(--accent); line-height: 1.25; }
+  h1 { font-size: 2rem; margin: 0 0 0.4rem; }
+  h2 { font-size: 1.35rem; margin: 2.6rem 0 0.8rem; padding-bottom: 0.3rem; border-bottom: 1px solid var(--rule); }
+  .subtitle { font-family: "Segoe UI", Arial, sans-serif; color: var(--muted); margin: 0 0 1.6rem; }
+  .facts {
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 0.95rem;
+    background: var(--soft);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: 1rem 1.25rem;
+    margin: 0 0 1.6rem;
+  }
+  .facts dl { display: grid; grid-template-columns: max-content 1fr; gap: 0.35rem 1.2rem; margin: 0; }
+  .facts dt { font-weight: 700; }
+  .facts dd { margin: 0; }
+  nav ul { list-style: none; font-family: "Segoe UI", Arial, sans-serif; font-size: 0.98rem; margin: 0.3rem 0 0; padding-left: 1.4rem; }
+  nav a, a { color: var(--accent); }
+  p { margin: 0 0 1rem; }
+  .abstract { border-left: 4px solid var(--accent); padding-left: 1.2rem; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 0.86rem;
+    line-height: 1.45;
+    margin: 0.5rem 0 1rem;
+  }
+  th { background: var(--soft); text-align: left; font-weight: 700; }
+  th, td { border: 1px solid var(--rule); padding: 0.55rem 0.65rem; vertical-align: top; }
+  tbody tr:nth-child(even) td { background: #fdfaf5; }
+  td:first-child { font-weight: 700; width: 22%; }
+  td:last-child { width: 15%; }
+  td .detail { display: block; font-size: 0.8rem; color: var(--muted); margin-top: 0.3rem; }
+  .status + .status { margin-top: 0.3rem; }
+  td .status { display: block; width: max-content; }
+  .status { display: inline-block; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.02em;
+            padding: 0.05rem 0.45rem; border: 1px solid var(--accent); border-radius: 4px; }
+  .status.planned { border-style: dashed; color: var(--muted); border-color: var(--muted); }
+  figure { margin: 1.4rem 0 2rem; }
+  figure img { width: 100%; height: auto; border: 1px solid var(--rule); border-radius: 4px; background: #fff; }
+  figcaption { font-family: "Segoe UI", Arial, sans-serif; font-size: 0.9rem; color: var(--muted); margin-top: 0.45rem; }
+  code { font-family: Consolas, "Courier New", monospace; font-size: 0.88em; background: var(--soft);
+         padding: 0.05rem 0.3rem; border-radius: 3px; }
+  .refs p { padding-left: 1.6rem; text-indent: -1.6rem; font-size: 0.95rem; }
+  .note { font-size: 0.95rem; color: var(--muted); }
+  @media print {
+    html { background: #fff; }
+    main { border: 0; box-shadow: none; margin: 0; padding: 0; max-width: none; }
+    figure, table { break-inside: avoid; }
+  }
+  @media (max-width: 700px) {
+    main { margin: 0; padding: 1.5rem 1rem; border-radius: 0; }
+    body { font-size: 17px; }
+  }
+</style>
+</head>
+<body>
+<main>
+
+<h1>An Email-Triage Assistant</h1>
+<p class="subtitle">Intelligent Interactive Systems: project report</p>
+
+<div class="facts">
+  <dl>
+    <dt>Word count</dt>
+    <dd>Abstract 247; main report 954; total 1,201 (limit 1,400). Figures, captions, references and links are not counted.</dd>
+    <dt>Repository</dt>
+    <dd><a href="https://github.com/AOS-real/email-triage-assistant">github.com/AOS-real/email-triage-assistant</a> (public)</dd>
+    <dt>Submitted release</dt>
+    <dd>Tag <code>v1.0-submitted</code></dd>
+    <dt>Development record</dt>
+    <dd>In the README: project status, how to run the prototype, and each significant change linked to its commit.</dd>
+  </dl>
+</div>
+
+<nav aria-label="Contents">
+  <strong>Contents</strong>
+  <ul>
+    <li><a href="#abstract">Abstract</a></li>
+    <li><a href="#problem">1. Problem and scope</a></li>
+    <li><a href="#rationale">2. Design rationale</a></li>
+    <li><a href="#architecture">3. Architecture</a></li>
+    <li><a href="#interaction">4. Interaction</a></li>
+    <li><a href="#development">5. Development and significant changes</a></li>
+    <li><a href="#references">References</a></li>
+  </ul>
+</nav>
+
+<section id="abstract" class="counted" data-part="abstract">
+<h2>Abstract</h2>
+<div class="abstract">
+<p>Email-triage assistants sort mail for people, but hide the signals behind each decision, so a
+person cannot check why a message was judged unimportant or correct the assistant when it is
+wrong (the Phase 1 problem). This project develops the Phase 1 assistant into a working web
+prototype in which the language model only extracts facts, while deterministic rules decide where
+a message goes and write the reason. Claude Sonnet 5.5 returns each email's deadline, request and
+sender type in a schema and quotes the email; code checks that every quote appears word for
+word. The inbox divides mail into "Needs you" and "Can wait", and each label states what
+was used, what was not used and how to change the result. When the facts cannot be checked, the
+message stays in "Needs you" as "Not sure" and asks "Can this wait?". A correction can become a
+rule about one sender, but only after the person sees a preview and confirms it; rules are dated
+and expire, and can be inspected, edited and forgotten. Five guards protect the system from long
+input, injected instructions, invented output, model failure and untrusted rules.</p>
+<p>The interface, rules, guards and learning are implemented and covered by 28 tests. The model call
+is implemented but has not been run because no API key was available; the ten test outputs are
+therefore simulated and labelled. A live mail connector, a calibrated decision threshold,
+a daily reminder and per-message progress are planned.</p>
+</div>
+</section>
+
+<section id="problem" class="counted" data-part="main">
+<h2>1. Problem and scope</h2>
+<p>The assistant infers, for each email, whether it needs the person now. Every such inference is a
+bet (Lecture 02), and in Phase 1 the bet failed silently: an urgent message from a new landlord was
+labelled "new sender" and hidden in "Can wait". The project therefore aims to make the reasons
+visible and the errors recoverable. Model accuracy is not its aim. Developed work covers sorting,
+labels, uncertainty, correction and learning; actions on mail (sending, deleting, archiving) are
+out of scope.</p>
+</section>
+
+<section id="rationale" class="counted" data-part="main">
+<h2>2. Design rationale</h2>
+<table>
+<thead><tr><th>Choice</th><th>Why it suits the problem (concept)</th><th>Evidence</th><th>Status</th></tr></thead>
+<tbody>
+<tr><td>The model extracts; code decides and writes the label</td>
+<td>A model's working persuades whether or not it is correct, so it is not an explanation (Lecture 09). Rule-written labels can state only inputs actually used, which gives the "just right" dose of Kulesza et al. (2013): used, not used, how to change (G11, make clear why)</td>
+<td>Phase 1 Test A: the label showed a reason that caused the error</td>
+<td><span class="status">Implemented</span></td></tr>
+<tr><td>Uncertain mail stays in "Needs you" and asks</td>
+<td>A missed deadline costs far more than a false alarm, so the criterion is cautious (signal detection, Lecture 04). When in doubt the system scopes its service and asks (G10; act, ask or wait, Horvitz, 1999)</td>
+<td>Phase 1 Test B: the system guessed silently. E03 and E05 now become "Not sure"</td>
+<td><span class="status">Implemented</span><span class="status planned">Calibration planned</span></td></tr>
+<tr><td>Every quote and date checked word for word</td>
+<td>Generation is not lookup and fluency is not evidence (Lecture 08); a schema guarantees shape, not truth (Lecture 09)</td>
+<td>E05's reformatted date was caught. E10's meeting time passed the checks, so a rule now counts a time as a deadline only when the email asks for action</td>
+<td><span class="status">Implemented</span></td></tr>
+<tr><td>Email treated as untrusted data; no action tools</td>
+<td>Trust follows the author (Lecture 10); with least privilege an injection can do little (Saltzer and Schroeder, 1975)</td>
+<td>Test: E07 is placed identically with and without its injected instruction</td>
+<td><span class="status">Implemented</span></td></tr>
+<tr><td>Rules previewed, confirmed, dated, expiring; inspectable, editable, forgettable</td>
+<td>Adapt cautiously (G14), provide global controls (G17); remembered data must be inspectable, editable and forgettable, and goes stale (Lecture 10)</td>
+<td>Building showed that sender-type rules were the over-broad error ER9, so rules were narrowed to one sender</td>
+<td><span class="status">Implemented</span></td></tr>
+<tr><td>Undo on every move; out-of-scope requests declined</td>
+<td>Slips need undo (Reason, 1990); decline states the limit and returns control (Lecture 07)</td>
+<td>Phase 1 Test B2: a delete request received a false confirmation</td>
+<td><span class="status">Implemented</span></td></tr>
+<tr><td>Buttons and a screen, not a chat box</td>
+<td>Recognition beats recall, and a blank chat box is a command line (Lecture 05); a hybrid keeps state on screen (Lecture 07)</td>
+<td>In the storyboards, every action is a button; typing is needed only for requests</td>
+<td><span class="status">Implemented</span></td></tr>
+<tr><td>A language model for extraction (Claude Sonnet 5.5, medium effort), with recorded replay as the default</td>
+<td>Deadlines are written in idioms that rules miss; replay lets a reviewer run the work without a key, and a schema contract turns a malformed answer into a caught error (Lecture 09)</td>
+<td>Phase 1's patterns missed "end of play Thursday" (test E04)</td>
+<td><span class="status">Implemented</span><span class="detail">Call not yet run; outputs simulated</span></td></tr>
+<tr><td>Read-only mail connector</td>
+<td>A real inbox needs live mail, but reading is all the assistant requires, so it would hold read access only (least privilege, Lecture 12)</td>
+<td>Scope compromise: ten test emails keep the evaluation repeatable</td>
+<td><span class="status planned">Planned</span></td></tr>
+<tr><td>Can wait summary and daily reminder</td>
+<td>Automation bias: people may treat "Can wait" as already checked (Parasuraman and Riley, 1997)</td>
+<td>Concept design error ER14</td>
+<td><span class="status">Summary implemented</span><span class="status planned">Reminder planned</span></td></tr>
+</tbody>
+</table>
+</section>
+
+<section id="architecture" class="counted" data-part="main">
+<h2>3. Architecture</h2>
+<p>Figure 1 shows the system. The design is a workflow, not an agent: code chooses each step, which
+is the smallest sufficient design for a task with one inference (Lecture 02). One model call
+extracts facts; guards G1 to G4 surround it, and the rules turn checked facts into a section and
+a label. The person's moves pass through the server to the inbox state, and a confirmed
+correction passes guard G5 into the learned rules, which feed back into the decision. On
+Shneiderman's (2022) two dimensions, sorting stays highly automated while labels, undo and
+editable rules raise human control.</p>
+<figure>
+  <img src="figures/system-diagram.png" alt="System architecture diagram">
+  <figcaption>Figure 1. System architecture, with the status of each component.</figcaption>
+</figure>
+</section>
+
+<section id="interaction" class="counted" data-part="main">
+<h2>4. Interaction</h2>
+<p>Storyboard 1 (Figure 2) shows a person checking why messages were placed, including a meeting time
+the system declined to treat as a deadline. Storyboard 2 (Figure 3) shows uncertainty, undo and a
+declined request, and Storyboard 3 (Figure 4) a correction that becomes a rule the person previews,
+saves and later forgets. Every frame is a screenshot of the implemented prototype; only the model
+outputs behind them are simulated.</p>
+<figure>
+  <img src="figures/storyboard-1-reasons.png" alt="Storyboard 1">
+  <figcaption>Figure 2. Storyboard 1: why is this message here?</figcaption>
+</figure>
+<figure>
+  <img src="figures/storyboard-2-unsure.png" alt="Storyboard 2">
+  <figcaption>Figure 3. Storyboard 2: when it is unsure or cannot help.</figcaption>
+</figure>
+<figure>
+  <img src="figures/storyboard-3-learning.png" alt="Storyboard 3">
+  <figcaption>Figure 4. Storyboard 3: a correction becomes a rule the person controls.</figcaption>
+</figure>
+</section>
+
+<section id="development" class="counted" data-part="main">
+<h2>5. Development and significant changes</h2>
+<p>The work began from the Phase 1 specification, storyboards and simulation (reused, in
+<code>phase1/</code>). Success criteria were written before the extraction prompt, and a fixed set
+of ten test emails was re-run after every change (Lecture 09). Before building the interface, a
+concept design predicted sixteen errors and assigned each a guard. The main changes were: Phase 1's
+mocked confidence score was replaced by checkable conditions; the E10 error led to the action rule;
+E05's expected result was corrected so that a simulated error could not count as a pass; and rules
+were narrowed to one sender. On the simulated outputs, all ten emails reach a safe section: nine as
+expected, one (E05) as a "Not sure" fallback in "Needs you", with none hidden in "Can wait" by
+mistake. The rules, guards and interaction are covered by 28 regression tests. The main limitation
+is that model outputs are simulated, so the guards are tested but the model's real error rates
+remain unknown; the first live run would replace the recorded outputs and repeat the same
+evaluation. The prototype has also not yet been tried with users, so the Phase 1 research gap,
+whether the labels lead people to check and correct mail, remains to be measured.</p>
+</section>
+
+<section id="references" class="refs">
+<h2>References</h2>
+<p>Amershi, S., Weld, D., Vorvoreanu, M., Fourney, A., Nushi, B., Collisson, P., Suh, J., Iqbal, S.,
+Bennett, P.N., Inkpen, K., Teevan, J., Kikin-Gil, R. and Horvitz, E. (2019) 'Guidelines for
+human-AI interaction', <em>Proceedings of the 2019 CHI Conference on Human Factors in Computing
+Systems</em>, Paper 3.</p>
+<p>Horvitz, E. (1999) 'Principles of mixed-initiative user interfaces', <em>Proceedings of the SIGCHI
+Conference on Human Factors in Computing Systems (CHI '99)</em>, pp. 159 to 166.</p>
+<p>Kulesza, T., Stumpf, S., Burnett, M., Yang, S., Kwan, I. and Wong, W.-K. (2013) 'Too much, too
+little, or just right? Ways explanations impact end users' mental models', <em>2013 IEEE Symposium on
+Visual Languages and Human-Centric Computing</em>, pp. 3 to 10.</p>
+<p>Parasuraman, R. and Riley, V. (1997) 'Humans and automation: use, misuse, disuse, abuse',
+<em>Human Factors</em>, 39(2), pp. 230 to 253.</p>
+<p>Reason, J. (1990) <em>Human Error</em>. Cambridge: Cambridge University Press.</p>
+<p>Saltzer, J.H. and Schroeder, M.D. (1975) 'The protection of information in computer systems',
+<em>Proceedings of the IEEE</em>, 63(9), pp. 1278 to 1308.</p>
+<p>Shneiderman, B. (2022) <em>Human-Centered AI</em>. Oxford: Oxford University Press.</p>
+<p>Lectures 02, 04, 05, 07, 08, 09, 10 and 12, Intelligent Interactive Systems, University of
+Birmingham, 2026 (module slides; course-own examples and frameworks).</p>
+<p class="note"><strong>Reused material.</strong> The problem statement, storyboards, specification and
+simulation from Phase 1 (Labs 1 to 3) are reused and kept unchanged in <code>phase1/</code>.
+Guidelines G10, G11, G14 and G17 are from Amershi et al. (2019). All code, figures and test data in
+the repository were produced for this project, with AI assistance recorded in the README.</p>
+</section>
+
+</main>
+</body>
+</html>
