@@ -1,0 +1,16 @@
+{
+  "case": "E06",
+  "mode": "simulated",
+  "model": "none (simulated)",
+  "prompt_version": "v1",
+  "note": "SIMULATED: written by hand in the shape the live call returns, to exercise the interface and the checks. Not a model measurement.",
+  "output": {
+    "deadline_text": "ASAP",
+    "asks_for_action": true,
+    "sender_type": "person",
+    "evidence": [
+      "Please sign off the budget sheet ASAP"
+    ],
+    "instructions_in_email": []
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "case": "E10",
+  "mode": "simulated",
+  "model": "none (simulated)",
+  "prompt_version": "v1",
+  "note": "SIMULATED: written by hand in the shape the live call returns, to exercise the interface and the checks. Not a model measurement. Contains a deliberate, plausible model error so that the checks can be tested. An event time is reported as a deadline, so it fails C3.",
+  "output": {
+    "deadline_text": "Friday at 10:00",
+    "asks_for_action": false,
+    "sender_type": "person",
+    "evidence": [
+      "the project meeting has moved to Friday at 10:00"
+    ],
+    "instructions_in_email": []
+  }
+}

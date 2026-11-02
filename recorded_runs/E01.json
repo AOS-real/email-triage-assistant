@@ -1,0 +1,16 @@
+{
+  "case": "E01",
+  "mode": "simulated",
+  "model": "none (simulated)",
+  "prompt_version": "v1",
+  "note": "SIMULATED: written by hand in the shape the live call returns, to exercise the interface and the checks. Not a model measurement.",
+  "output": {
+    "deadline_text": "by Thursday 5pm",
+    "asks_for_action": true,
+    "sender_type": "person",
+    "evidence": [
+      "Please reply by Thursday 5pm to confirm you are happy to continue."
+    ],
+    "instructions_in_email": []
+  }
+}

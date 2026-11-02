@@ -1,0 +1,16 @@
+{
+  "case": "E04",
+  "mode": "simulated",
+  "model": "none (simulated)",
+  "prompt_version": "v1",
+  "note": "SIMULATED: written by hand in the shape the live call returns, to exercise the interface and the checks. Not a model measurement.",
+  "output": {
+    "deadline_text": "by end of play Thursday",
+    "asks_for_action": true,
+    "sender_type": "person",
+    "evidence": [
+      "Can you send me the final slides by end of play Thursday?"
+    ],
+    "instructions_in_email": []
+  }
+}
