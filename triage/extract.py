@@ -6,6 +6,7 @@ import json
 import os
 from pathlib import Path
 
+from triage.guards import find_injection, guard_call, guard_input
 from triage.schema import SCHEMA, shape_problems, support_problems
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -66,10 +67,17 @@ def extract(email, live=None):
     """
     if live is None:
         live = os.environ.get("TRIAGE_MODE") == "live"
-    record = call_live(email) if live else read_replay(email)
+    sent, input_note = guard_input(email)
+    record, failure = guard_call(call_live if live else read_replay, sent)
+    record = record or {"case": email["id"], "mode": "failed", "output": None}
     output = record.get("output")
-    problems = shape_problems(output) if output is not None else ["no output"]
-    if not problems:
-        problems = support_problems(output, email)
+    if failure:
+        problems = [failure]
+    elif output is None:
+        problems = ["no output"]
+    else:
+        problems = shape_problems(output) or support_problems(output, email)
+    notes = [input_note] if input_note else []
     return {"record": record, "output": output, "problems": problems,
-            "supported": not problems}
+            "supported": not problems, "notes": notes,
+            "injection_found": find_injection(email)}

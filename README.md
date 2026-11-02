@@ -14,7 +14,10 @@ rules the person can inspect, edit and forget.
 | Live calls to Claude Sonnet 5.5 | Implemented but not yet run (no key) |
 | Recorded outputs for the ten test emails | Simulated (`recorded_runs/`, each file labelled) |
 | Evaluation of the test set against criteria C1 to C6 | Implemented (`evaluate.py`, `results/`) |
-| Decision rules, reason labels, web interface, learned rules | Not started |
+| Decision rules and reason labels | Implemented (`triage/decide.py`, `docs/decision_rules.md`) |
+| Guards protecting the system (input, injection, output, failure, learned rules) | Implemented (`triage/guards.py`) |
+| Regression tests (12) | Implemented (`tests/`) |
+| Web interface, learned-rules panel | Not started |
 
 Earlier work from Phase 1 is in `phase1/` (see below).
 
@@ -33,8 +36,14 @@ Requires Python 3.10 or later. Replay mode needs no packages and no key.
 python evaluate.py
 ```
 
-This scores the ten test emails in `data/test_emails.json` against criteria C1 to C6 and writes
-`results/extraction_v1.md`. Live mode (optional) needs `pip install anthropic` and the reviewer's
+This scores the ten test emails in `data/test_emails.json` against criteria C1 to C6, shows the
+decision and label for each, and writes `results/extraction_v1.md`. The regression tests run with:
+
+```bash
+python -m unittest -v
+```
+
+ Live mode (optional) needs `pip install anthropic` and the reviewer's
 own key:
 
 ```bash
@@ -58,6 +67,7 @@ entry, approving some as drafted and changing others.
 | Design | Claude Code (Claude Opus 5.5) | Possible designs for a prototype, compared | Three options (web prototype, Python simulation, screen walkthrough), with the web prototype recommended and Claude Haiku 5.5 suggested for extraction | Changed. I compared the options against the marking criteria and chose the recommended web prototype, but replaced the suggested Claude Haiku 5.5 with Claude Sonnet 5.5 at medium effort for extraction |
 | Repository | Claude Code (Claude Opus 5.5) | The relevant lab work copied into `phase1/`, a `.gitignore` with recommended exclusions, and a README with the sections below | The files, created as requested | Kept. I checked that `phase1/` holds no personal data and that the README matches the brief |
 | Extraction | Claude Code (Claude Opus 5.5) | The extraction call, with the success criteria written first, then a task specification, a schema with checks, ten test emails and replay files | The specification, the code and an evaluation script. No API key was available, so the replay files are simulated, and two of them contain deliberate errors to test the checks | Kept, and I labelled the simulated files as such. The evaluation run showed that the checks caught the reformatted date in E05 automatically, but the meeting time in E10 passed them and was still wrong |
+| Decision rules | Claude Code (Claude Opus 5.5) | Decision rules, reason labels, and guards to protect the system itself | Six ordered rules, labels listing what was used and what was not, five guards (input length, injected instructions, output checks, model failure and learned rules) and 12 regression tests | Changed. I allowed guards beyond the original plan. The E10 error is now fixed in the rules: a time counts as a deadline only when the email asks for action. I corrected the expected result for E05 to Needs you, so its "Not sure" counts as a safe fallback and not as a pass. I ran the tests and the evaluation myself |
 
 ## Additional files
 

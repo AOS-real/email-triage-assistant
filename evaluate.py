@@ -9,6 +9,7 @@ Writes results/extraction_<prompt version>.md.
 import json
 from pathlib import Path
 
+from triage.decide import decide
 from triage.extract import PROMPT_VERSION, extract
 from triage.schema import shape_problems, support_problems
 
@@ -35,7 +36,7 @@ def score(email, result):
 
 def main():
     emails = json.loads((ROOT / "data" / "test_emails.json").read_text(encoding="utf-8"))
-    rows, totals, modes = [], {c: 0 for c in CRITERIA}, set()
+    rows, decisions, totals, modes = [], [], {c: 0 for c in CRITERIA}, set()
     for email in emails:
         result = extract(email)
         modes.add(result["record"].get("mode", "unknown"))
@@ -45,6 +46,9 @@ def main():
         cells = " | ".join("pass" if marks[c] else "**fail**" for c in CRITERIA)
         status = "supported" if result["supported"] else "unsupported: " + "; ".join(result["problems"])
         rows.append(f"| {email['id']} | {email['case']} | {cells} | {status} |")
+        d = decide(email, result)
+        decisions.append(f"| {email['id']} | {email['expected']['section']} | {d['section']} | "
+                         f"{d['headline']} | {'; '.join(d['warnings']) or 'none'} |")
 
     n = len(emails)
     lines = [
@@ -57,7 +61,11 @@ def main():
                       "not the model; live results will replace them when a key is available."]
     lines += ["", "| Case | Description | " + " | ".join(CRITERIA) + " | Check result |",
               "|---|---|" + "---|" * len(CRITERIA) + "---|", *rows,
-              "| | **Passed** | " + " | ".join(f"{totals[c]}/{n}" for c in CRITERIA) + " | |", ""]
+              "| | **Passed** | " + " | ".join(f"{totals[c]}/{n}" for c in CRITERIA) + " | |", "",
+              "## Decisions", "",
+              "\"not_sure\" is shown in Needs you with the question \"Can this wait?\".", "",
+              "| Case | Expected | Decided | Label headline | Warnings |",
+              "|---|---|---|---|---|", *decisions, ""]
     out_dir = ROOT / "results"
     out_dir.mkdir(exist_ok=True)
     path = out_dir / f"extraction_{PROMPT_VERSION}.md"
