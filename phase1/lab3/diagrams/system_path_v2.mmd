@@ -1,0 +1,33 @@
+flowchart LR
+    P["PERSON<br/>Opens inbox, checks a label,<br/>answers a question or moves a message back"]
+    IN["INPUT<br/>Incoming email: sender, subject, body, attachments<br/>(IMPLEMENTED as test data)"]
+    CTX[("CONTEXT / DATA<br/>Sender history, owner's past actions<br/>(SIMULATED: a small Python dict)")]
+    EX["EXTRACT<br/>Deadline words, sender status,<br/>unreadable attachments<br/>(IMPLEMENTED: regex, stand-in for an LLM)"]
+    VAL["NEW: VALIDATE<br/>Is there enough information to decide?<br/>Confidence below 0.6 means abstain<br/>(IMPLEMENTED; confidence MOCKED)"]
+    CL["CLASSIFY<br/>A deadline raises priority.<br/>A new sender no longer lowers it<br/>(IMPLEMENTED: rules)"]
+    WHY["GENERATE REASON<br/>Label says what was found and what is missing<br/>(IMPLEMENTED: template text)"]
+    OUT["RESPONSE<br/>Needs you / Can wait,<br/>or NEW: 'Not sure' in Needs you<br/>(SIMULATED: text output)"]
+    ASK["NEW: ASK<br/>'Can this wait?'<br/>Keep in Needs you / Move to Can wait<br/>(SIMULATED)"]
+    NEXT{"NEXT ACTION<br/>Person agrees, answers,<br/>or taps 'Move back'<br/>(SIMULATED: printed options)"}
+    FB["CORRECTION<br/>'Why was this wrong?'<br/>Urgent deadline / Important sender / Other<br/>(IMPLEMENTED: correction handling)"]
+    LEARN[("LEARN<br/>Rule list in memory<br/>(SIMULATED)")]
+
+    IN --> EX
+    CTX --> EX
+    EX --> VAL
+    VAL -- "enough information" --> CL
+    VAL -- "missing information" --> ASK
+    CL --> WHY --> OUT --> P
+    ASK --> OUT
+    P --> NEXT
+    NEXT -- "agrees / answers" --> P
+    NEXT -- "Move back" --> FB --> LEARN --> CL
+
+    classDef impl fill:#d9f2d9,stroke:#2d6a2d,color:#111
+    classDef sim fill:#fff2cc,stroke:#8a6d00,color:#111
+    classDef newc fill:#ffd6d6,stroke:#a02020,color:#111,stroke-width:3px
+    classDef person fill:#cfe2ff,stroke:#1a4a8a,color:#111
+    class IN,EX,CL,WHY impl
+    class CTX,OUT,LEARN sim
+    class VAL,ASK newc
+    class P,NEXT,FB person
